@@ -12,6 +12,7 @@
 		13C5A19F2B1F8768006F3F29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13C5A19E2B1F8768006F3F29 /* Assets.xcassets */; };
 		13C5A1A22B1F8768006F3F29 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13C5A1A12B1F8768006F3F29 /* Preview Assets.xcassets */; };
 		13C5A1AA2B1F8E3B006F3F29 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */; };
+		13C5A1AC2B1FE1A4006F3F29 /* HeartRateData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		13C5A1A12B1F8768006F3F29 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		13C5A1A82B1F8797006F3F29 /* CardioVisible.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CardioVisible.entitlements; sourceTree = "<group>"; };
 		13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
+		13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 				13C5A19A2B1F8767006F3F29 /* CardioVisibleApp.swift */,
 				13C5A19C2B1F8767006F3F29 /* ContentView.swift */,
 				13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */,
+				13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */,
 				13C5A19E2B1F8768006F3F29 /* Assets.xcassets */,
 				13C5A1A02B1F8768006F3F29 /* Preview Content */,
 			);
@@ -142,6 +145,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13C5A1AC2B1FE1A4006F3F29 /* HeartRateData.swift in Sources */,
 				13C5A19D2B1F8767006F3F29 /* ContentView.swift in Sources */,
 				13C5A1AA2B1F8E3B006F3F29 /* HealthStore.swift in Sources */,
 				13C5A19B2B1F8767006F3F29 /* CardioVisibleApp.swift in Sources */,

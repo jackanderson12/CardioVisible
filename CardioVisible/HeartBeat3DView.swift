@@ -16,6 +16,9 @@ struct HeartBeat3DView: UIViewRepresentable {
         var playbackControllers = [AnimationPlaybackController]()
         var timer: Timer?
         
+        var currentAngleX: Float = 0
+        var currentAngleY: Float = 0
+        
         func setupAnimationTimer(rate: Double, modelEntity: ModelEntity) {
             let interval = (rate / 60.0) * 1.2 // Animation is 50BPM, correction factor of 1.2
             playbackControllers = modelEntity.availableAnimations.compactMap { animation -> AnimationPlaybackController? in
@@ -38,27 +41,39 @@ struct HeartBeat3DView: UIViewRepresentable {
             }
         }
         
-        var currentAngleY: Float = 0
-        
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-            guard let view = gesture.view as? ARView else { return }
-            
-            let translation = gesture.translation(in: view)
-            let angleY = Float(translation.x) * (Float.pi / 180) // Convert to radians
-            
-            if gesture.state == .changed {
-                let rotation = simd_make_float4x4(rotateAboutY: angleY + currentAngleY)
-                view.scene.anchors[0].transform.matrix = rotation
-            } else if gesture.state == .ended {
-                currentAngleY += angleY
+                guard let view = gesture.view as? ARView else { return }
+
+                let translation = gesture.translation(in: view)
+                let angleY = Float(translation.x) * (Float.pi / 180)
+                let angleX = Float(translation.y) * (Float.pi / 180)
+
+                if gesture.state == .changed {
+                    let rotationY = simd_make_float4x4(rotateAboutY: angleY + currentAngleY)
+                    let rotationX = simd_make_float4x4(rotateAboutX: angleX + currentAngleX)
+                    let combinedRotation = simd_mul(rotationY, rotationX)
+                    view.scene.anchors[0].transform.matrix = combinedRotation
+                } else if gesture.state == .ended {
+                    currentAngleY += angleY
+                    currentAngleX += angleX
+                }
             }
-        }
         
         func simd_make_float4x4(rotateAboutY radians: Float) -> simd_float4x4 {
             let rows = [
-                simd_float4(cos(radians), 0, -sin(radians), 0),
+                simd_float4(cos(radians), 0, sin(radians), 0),
                 simd_float4(0, 1, 0, 0),
-                simd_float4(sin(radians), 0, cos(radians), 0),
+                simd_float4(-sin(radians), 0, cos(radians), 0),
+                simd_float4(0, 0, 0, 1)
+            ]
+            return float4x4(rows: rows)
+        }
+
+        func simd_make_float4x4(rotateAboutX radians: Float) -> simd_float4x4 {
+            let rows = [
+                simd_float4(1, 0, 0, 0),
+                simd_float4(0, cos(radians), -sin(radians), 0),
+                simd_float4(0, sin(radians), cos(radians), 0),
                 simd_float4(0, 0, 0, 1)
             ]
             return float4x4(rows: rows)

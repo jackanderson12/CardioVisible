@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		137B5C3B2B202B470067913C /* HeartBeat3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137B5C3A2B202B470067913C /* HeartBeat3DView.swift */; };
-		137B5C3D2B20C4A20067913C /* beating-heart-v004a-animated.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 137B5C3C2B20C4A20067913C /* beating-heart-v004a-animated.usdz */; };
+		13B6E4D22B20D4FC00627BAC /* beating-heart-v004a-animated.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */; };
 		13C5A19B2B1F8767006F3F29 /* CardioVisibleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A19A2B1F8767006F3F29 /* CardioVisibleApp.swift */; };
 		13C5A19D2B1F8767006F3F29 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A19C2B1F8767006F3F29 /* ContentView.swift */; };
 		13C5A19F2B1F8768006F3F29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13C5A19E2B1F8768006F3F29 /* Assets.xcassets */; };
@@ -19,7 +19,7 @@
 
 /* Begin PBXFileReference section */
 		137B5C3A2B202B470067913C /* HeartBeat3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartBeat3DView.swift; sourceTree = "<group>"; };
-		137B5C3C2B20C4A20067913C /* beating-heart-v004a-animated.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "beating-heart-v004a-animated.usdz"; sourceTree = "<group>"; };
+		13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "beating-heart-v004a-animated.usdz"; sourceTree = "<group>"; };
 		13C5A1972B1F8767006F3F29 /* CardioVisible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardioVisible.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13C5A19A2B1F8767006F3F29 /* CardioVisibleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardioVisibleApp.swift; sourceTree = "<group>"; };
 		13C5A19C2B1F8767006F3F29 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 				13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */,
 				13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */,
 				137B5C3A2B202B470067913C /* HeartBeat3DView.swift */,
-				137B5C3C2B20C4A20067913C /* beating-heart-v004a-animated.usdz */,
+				13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */,
 				13C5A19E2B1F8768006F3F29 /* Assets.xcassets */,
 				13C5A1A02B1F8768006F3F29 /* Preview Content */,
 			);
@@ -140,7 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13C5A1A22B1F8768006F3F29 /* Preview Assets.xcassets in Resources */,
-				137B5C3D2B20C4A20067913C /* beating-heart-v004a-animated.usdz in Resources */,
+				13B6E4D22B20D4FC00627BAC /* beating-heart-v004a-animated.usdz in Resources */,
 				13C5A19F2B1F8768006F3F29 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

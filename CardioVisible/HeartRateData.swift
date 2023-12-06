@@ -12,6 +12,6 @@ struct HeartRateData: Identifiable {
     var date: Date?
     var minimum: Double?
     var maximum: Double?
-    var average: Double?
+    var resting: Double?
     var current: Double?
 }

@@ -5,28 +5,59 @@
 //  Created by Jack Anderson on 12/5/23.
 //
 
-import Foundation
 import SwiftUI
-import SceneKit
+import RealityKit
 
 struct HeartBeat3DView: UIViewRepresentable {
-    var rate: Double
+    
+    var rate: Double // Heart rate in beats per minute
 
-    func makeUIView(context: Context) -> SCNView {
-        let scnView = SCNView()
-        scnView.scene = SCNScene(named: "beating-heart-v004a-animated.dae")
-        scnView.autoenablesDefaultLighting = true
-        // Additional SceneKit setup...
-        return scnView
+    class Coordinator {
+        var playbackControllers = [AnimationPlaybackController]()
+        var timer: Timer?
+
+        func setupAnimationTimer(rate: Double, modelEntity: ModelEntity) {
+            let interval = 60.0 / rate // Time for one beat
+            playbackControllers = modelEntity.availableAnimations.compactMap { animation -> AnimationPlaybackController? in
+                modelEntity.playAnimation(animation.repeat())
+            }
+
+            timer?.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
+                self?.playbackControllers.forEach { controller in
+                    controller.resume() // Start playing each animation
+                    // Optionally, you might need to adjust the timeOffset to sync the animation progress
+                }
+            }
+        }
     }
 
-    func updateUIView(_ scnView: SCNView, context: Context) {
-        // Handle animation based on heart rate
-        // You might need to adjust this part based on how your model is animated
-        let animationDuration = 60.0 / rate
-        scnView.scene?.rootNode.childNodes.forEach { node in
-            node.animationPlayer(forKey: "heartbeat")?.play()
-            node.animationPlayer(forKey: "heartbeat")?.speed = CGFloat(Float(animationDuration))
+    func makeCoordinator() -> Coordinator {
+        return Coordinator()
+    }
+
+    func makeUIView(context: Context) -> ARView {
+        let arView = ARView(frame: .zero)
+        let filename = "beating-heart-v004a-animated.usdz"
+
+        if let modelEntity = try? ModelEntity.loadModel(named: filename) {
+            let anchorEntity = AnchorEntity()
+            anchorEntity.addChild(modelEntity)
+            arView.scene.addAnchor(anchorEntity)
+            
+            context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
+        }
+
+        return arView
+    }
+
+    func updateUIView(_ uiView: ARView, context: Context) {
+        // If you need to update the heart rate and animation speed
+        if let modelEntity = (uiView.scene.anchors.first as? AnchorEntity)?.children.first as? ModelEntity {
+            context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
         }
     }
 }
+
+
+

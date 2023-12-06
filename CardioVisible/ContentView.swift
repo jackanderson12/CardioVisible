@@ -22,16 +22,19 @@ struct ContentView: View {
                         selectedRate = heartRateData.resting
                     }, label: {
                         Text("Resting Heart Rate: \(Int(heartRateData.resting ?? 0)) BPM")
+                            .bold()
                     })
                     Button(action: {
                         selectedRate = heartRateData.minimum
                     }, label: {
                         Text("Minimum Heart Rate: \(Int(heartRateData.minimum ?? 0)) BPM")
+                            .bold()
                     })
                     Button(action: {
                         selectedRate = heartRateData.maximum
                     }, label: {
                         Text("Maximum Heart Rate: \(Int(heartRateData.maximum ?? 0)) BPM")
+                            .bold()
                     })
                 } .zIndex(1.0)
                 

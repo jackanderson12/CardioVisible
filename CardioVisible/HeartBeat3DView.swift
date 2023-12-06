@@ -17,7 +17,7 @@ struct HeartBeat3DView: UIViewRepresentable {
         var timer: Timer?
         
         func setupAnimationTimer(rate: Double, modelEntity: ModelEntity) {
-            let interval = rate / 60.0 // Time for one beat
+            let interval = (rate / 60.0) * 1.2 // Animation is 50BPM, correction factor of 1.2
             playbackControllers = modelEntity.availableAnimations.compactMap { animation -> AnimationPlaybackController? in
                 modelEntity.playAnimation(animation.repeat())
             }

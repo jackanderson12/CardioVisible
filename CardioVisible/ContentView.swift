@@ -18,23 +18,28 @@ struct ContentView: View {
                 VStack {
                     Spacer()
                     Spacer()
+                    Spacer()
+                    Spacer()
                     Button(action: {
                         selectedRate = heartRateData.resting
                     }, label: {
                         Text("Resting Heart Rate: \(Int(heartRateData.resting ?? 0)) BPM")
                             .bold()
+                            .padding(.bottom, 5)
                     })
                     Button(action: {
                         selectedRate = heartRateData.minimum
                     }, label: {
                         Text("Minimum Heart Rate: \(Int(heartRateData.minimum ?? 0)) BPM")
                             .bold()
+                            .padding(.bottom, 5)
                     })
                     Button(action: {
                         selectedRate = heartRateData.maximum
                     }, label: {
                         Text("Maximum Heart Rate: \(Int(heartRateData.maximum ?? 0)) BPM")
                             .bold()
+                            .padding(.bottom, 5)
                     })
                 } .zIndex(1.0)
                 

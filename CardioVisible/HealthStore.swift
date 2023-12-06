@@ -16,7 +16,7 @@ enum HealthError: Error {
 
 struct HealthConstants {
     static let calendar: Calendar = Calendar(identifier: .gregorian)
-    static let startDate: Date? = calendar.date(byAdding: .day, value: -7, to: Date())
+    static let startDate: Date = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
     static let endDate: Date = Date()
     static let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
     static let interval: DateComponents = DateComponents(day: 1)
@@ -63,7 +63,7 @@ class HealthStore: ObservableObject {
                 quantityType: heartRateType,
                 quantitySamplePredicate: HealthConstants.predicate,
                 options: .discreteMin,
-                anchorDate: HealthConstants.startDate!,
+                anchorDate: HealthConstants.startDate,
                 intervalComponents: HealthConstants.interval
             )
             
@@ -82,7 +82,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
 //                        print("Minimum heart rate: \(minimumQuantity)")
@@ -106,7 +106,7 @@ class HealthStore: ObservableObject {
                 quantityType: heartRateType,
                 quantitySamplePredicate: HealthConstants.predicate,
                 options: .discreteMax,
-                anchorDate: HealthConstants.startDate!,
+                anchorDate: HealthConstants.startDate,
                 intervalComponents: HealthConstants.interval
             )
             
@@ -125,7 +125,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
 //                        print("Maximum heart rate: \(maximumQuantity)")
@@ -149,7 +149,7 @@ class HealthStore: ObservableObject {
                 quantityType: heartRateType,
                 quantitySamplePredicate: HealthConstants.predicate,
                 options: [.discreteAverage],
-                anchorDate: HealthConstants.startDate!,
+                anchorDate: HealthConstants.startDate,
                 intervalComponents: HealthConstants.interval
             )
             
@@ -168,7 +168,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
 //                        print("Resting heart rate: \(averageQuantity)")

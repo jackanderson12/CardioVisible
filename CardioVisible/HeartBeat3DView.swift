@@ -42,22 +42,22 @@ struct HeartBeat3DView: UIViewRepresentable {
         }
         
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
-                guard let view = gesture.view as? ARView else { return }
-
-                let translation = gesture.translation(in: view)
-                let angleY = Float(translation.x) * (Float.pi / 180)
-                let angleX = Float(translation.y) * (Float.pi / 180)
-
-                if gesture.state == .changed {
-                    let rotationY = simd_make_float4x4(rotateAboutY: angleY + currentAngleY)
-                    let rotationX = simd_make_float4x4(rotateAboutX: angleX + currentAngleX)
-                    let combinedRotation = simd_mul(rotationY, rotationX)
-                    view.scene.anchors[0].transform.matrix = combinedRotation
-                } else if gesture.state == .ended {
-                    currentAngleY += angleY
-                    currentAngleX += angleX
-                }
+            guard let view = gesture.view as? ARView else { return }
+            
+            let translation = gesture.translation(in: view)
+            let angleY = Float(translation.x) * (Float.pi / 180)
+            let angleX = Float(translation.y) * (Float.pi / 180)
+            
+            if gesture.state == .changed {
+                let rotationY = simd_make_float4x4(rotateAboutY: angleY + currentAngleY)
+                let rotationX = simd_make_float4x4(rotateAboutX: angleX + currentAngleX)
+                let combinedRotation = simd_mul(rotationY, rotationX)
+                view.scene.anchors[0].transform.matrix = combinedRotation
+            } else if gesture.state == .ended {
+                currentAngleY += angleY
+                currentAngleX += angleX
             }
+        }
         
         func simd_make_float4x4(rotateAboutY radians: Float) -> simd_float4x4 {
             let rows = [
@@ -68,7 +68,7 @@ struct HeartBeat3DView: UIViewRepresentable {
             ]
             return float4x4(rows: rows)
         }
-
+        
         func simd_make_float4x4(rotateAboutX radians: Float) -> simd_float4x4 {
             let rows = [
                 simd_float4(1, 0, 0, 0),
@@ -92,6 +92,17 @@ struct HeartBeat3DView: UIViewRepresentable {
         if let modelEntity = try? ModelEntity.loadModel(named: filename) {
             modelEntity.scale = [0.1, 0.1, 0.1]
             modelEntity.position = [0, 0, 0]
+            
+            // Create and configure a directional light
+            let directionalLight = DirectionalLight()
+            directionalLight.light.intensity = 1000 // Adjust intensity as needed
+            directionalLight.light.color = .white // Adjust color as needed
+            directionalLight.orientation = simd_quatf(angle: .pi / 4, axis: [1, 0, 0]) // Adjust orientation as needed
+            
+            // Add lights to the scene
+            let lightAnchor = AnchorEntity()
+            lightAnchor.addChild(directionalLight)
+            arView.scene.addAnchor(lightAnchor)
             
             let anchorEntity = AnchorEntity()
             addAllChildren(to: anchorEntity, from: modelEntity)

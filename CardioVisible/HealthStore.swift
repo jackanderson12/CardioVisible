@@ -85,11 +85,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
-                        print("Minimum heart rate: \(minimumQuantity)")
-                    }
-                    if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
-                        localHeartRateData.maximum = maximumQuantity
-                        print("Maximum heart rate: \(maximumQuantity)")
+//                        print("Minimum heart rate: \(minimumQuantity)")
                     }
                 }
                 
@@ -132,7 +128,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
-                        print("Maximum heart rate: \(maximumQuantity)")
+//                        print("Maximum heart rate: \(maximumQuantity)")
                     }
                 }
                 
@@ -175,7 +171,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate!, to: HealthConstants.endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
-                        print("Resting heart rate: \(averageQuantity)")
+//                        print("Resting heart rate: \(averageQuantity)")
                     }
                 }
                 

@@ -10,24 +10,35 @@ import SwiftUI
 struct ContentView: View {
     
     @StateObject private var healthStore = HealthStore()
+    @State private var selectedRate: Double? = 0.0
     
     var body: some View {
         ZStack {
             if let heartRateData = healthStore.heartRateReading {
-                if let restingRate = healthStore.heartRateReading?.resting {
-                    HeartBeat3DView(rate: restingRate)
-                        .padding()
-                } else {
-                    Text("Loading heart rate data...")
-                }
                 VStack {
-                    Text("Resting Heart Rate This Week: \(Int(heartRateData.resting ?? 0)) BPM")
-                        .padding()
-                    Text("Maximum Heart Rate This Week: \(Int(heartRateData.maximum ?? 0)) BPM")
-                        .padding()
-                    Text("Minimum Heart Rate This Week: \(Int(heartRateData.minimum ?? 0)) BPM")
-                        .padding()
+                    Spacer()
+                    Spacer()
+                    Button(action: {
+                        selectedRate = heartRateData.resting
+                    }, label: {
+                        Text("Resting Heart Rate: \(Int(heartRateData.resting ?? 0)) BPM")
+                    })
+                    Button(action: {
+                        selectedRate = heartRateData.minimum
+                    }, label: {
+                        Text("Minimum Heart Rate: \(Int(heartRateData.minimum ?? 0)) BPM")
+                    })
+                    Button(action: {
+                        selectedRate = heartRateData.maximum
+                    }, label: {
+                        Text("Maximum Heart Rate: \(Int(heartRateData.maximum ?? 0)) BPM")
+                    })
+                } .zIndex(1.0)
+                
+                if let rate = selectedRate {
+                    HeartBeat3DView(rate: rate)
                 }
+                
             } else {
                 Text("Loading heart rate data...")
             }
@@ -42,30 +53,6 @@ struct ContentView: View {
                 // Handle the error, e.g., show an error message to the user
             }
         }
-    }
-}
-
-
-struct HeartbeatView: View {
-    var rate: Double // Resting heart rate in beats per minute
-    private var animationDuration: Double {
-        // Calculate the duration of one beat based on the heart rate
-        60.0 / rate
-    }
-    
-    @State private var animate = false
-    
-    var body: some View {
-        Image(systemName: "heart.fill") // Using a system image, you can replace it with your own
-            .resizable()
-            .frame(width: 100, height: 100)
-            .foregroundColor(.red)
-            .scaleEffect(animate ? 1.1 : 1.0) // Scale up slightly when animated
-            .onAppear {
-                withAnimation(Animation.easeInOut(duration: animationDuration).repeatForever(autoreverses: true)) {
-                    animate = true
-                }
-            }
     }
 }
 

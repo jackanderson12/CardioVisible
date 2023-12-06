@@ -17,7 +17,7 @@ struct HeartBeat3DView: UIViewRepresentable {
         var timer: Timer?
 
         func setupAnimationTimer(rate: Double, modelEntity: ModelEntity) {
-            let interval = 60.0 / rate // Time for one beat
+            let interval = rate / 60.0 // Time for one beat
             playbackControllers = modelEntity.availableAnimations.compactMap { animation -> AnimationPlaybackController? in
                 modelEntity.playAnimation(animation.repeat())
             }
@@ -25,9 +25,16 @@ struct HeartBeat3DView: UIViewRepresentable {
             timer?.invalidate()
             timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
                 self?.playbackControllers.forEach { controller in
+                    controller.speed = Float(interval)
                     controller.resume() // Start playing each animation
                     // Optionally, you might need to adjust the timeOffset to sync the animation progress
                 }
+            }
+        }
+        
+        func startAnimation() {
+            playbackControllers.forEach { controller in
+                controller.resume()
             }
         }
     }
@@ -41,8 +48,11 @@ struct HeartBeat3DView: UIViewRepresentable {
         let filename = "beating-heart-v004a-animated.usdz"
 
         if let modelEntity = try? ModelEntity.loadModel(named: filename) {
+            modelEntity.scale = [0.1, 0.1, 0.1]
+            modelEntity.position = [0, 0, 0]
+            
             let anchorEntity = AnchorEntity()
-            anchorEntity.addChild(modelEntity)
+            addAllChildren(to: anchorEntity, from: modelEntity)
             arView.scene.addAnchor(anchorEntity)
             
             context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
@@ -55,6 +65,14 @@ struct HeartBeat3DView: UIViewRepresentable {
         // If you need to update the heart rate and animation speed
         if let modelEntity = (uiView.scene.anchors.first as? AnchorEntity)?.children.first as? ModelEntity {
             context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
+            context.coordinator.startAnimation()
+        }
+    }
+    
+    func addAllChildren(to parentEntity: Entity, from modelEntity: Entity) {
+        parentEntity.addChild(modelEntity)
+        for child in modelEntity.children {
+            addAllChildren(to: parentEntity, from: child)
         }
     }
 }

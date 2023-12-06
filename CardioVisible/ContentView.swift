@@ -12,7 +12,7 @@ struct ContentView: View {
     @StateObject private var healthStore = HealthStore()
     
     var body: some View {
-        VStack {
+        ZStack {
             if let heartRateData = healthStore.heartRateReading {
                 if let restingRate = healthStore.heartRateReading?.resting {
                     HeartBeat3DView(rate: restingRate)
@@ -20,9 +20,14 @@ struct ContentView: View {
                 } else {
                     Text("Loading heart rate data...")
                 }
-                Text("Resting Heart Rate This Week: \(Int(heartRateData.resting ?? 0)) BPM")
-                Text("Maximum Heart Rate This Week: \(Int(heartRateData.maximum ?? 0)) BPM")
-                Text("Minimum Heart Rate This Week: \(Int(heartRateData.minimum ?? 0)) BPM")
+                VStack {
+                    Text("Resting Heart Rate This Week: \(Int(heartRateData.resting ?? 0)) BPM")
+                        .padding()
+                    Text("Maximum Heart Rate This Week: \(Int(heartRateData.maximum ?? 0)) BPM")
+                        .padding()
+                    Text("Minimum Heart Rate This Week: \(Int(heartRateData.minimum ?? 0)) BPM")
+                        .padding()
+                }
             } else {
                 Text("Loading heart rate data...")
             }

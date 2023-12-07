@@ -11,7 +11,10 @@ struct ContentView: View {
     
     @StateObject private var healthStore = HealthStore()
     @State private var selectedRate: Double? = 0.0
-    @State private var selectedTimeRange: TimeRange = .daily
+    @State private var selectedTimeRange: TimeRange = .yearly
+    @State private var minimum: Double?
+    @State private var maximum: Double?
+    @State private var resting: Double?
     
     var body: some View {
         ZStack {
@@ -26,28 +29,31 @@ struct ContentView: View {
                     .padding(.horizontal)
                     .pickerStyle(SegmentedPickerStyle())
                     .onChange(of: selectedTimeRange) {
-                        healthStore.updateTimeRange(to: selectedTimeRange)
+                        healthStore.healthConstants.updateTimeRange(to: selectedTimeRange)
+                        Task {
+                            try await healthStore.heartRateReading = healthStore.fetchHeartRateData()
+                        }
                     }
                     Spacer()
                     Spacer()
                     Button(action: {
                         selectedRate = heartRateData.resting
                     }, label: {
-                        Text("Resting Heart Rate: \(Int(heartRateData.resting ?? 0)) BPM")
+                        Text("Resting Heart Rate: \(Int(resting ?? 0)) BPM")
                             .bold()
                             .padding(.bottom, 5)
                     })
                     Button(action: {
                         selectedRate = heartRateData.minimum
                     }, label: {
-                        Text("Minimum Heart Rate: \(Int(heartRateData.minimum ?? 0)) BPM")
+                        Text("Minimum Heart Rate: \(Int(minimum ?? 0)) BPM")
                             .bold()
                             .padding(.bottom, 5)
                     })
                     Button(action: {
                         selectedRate = heartRateData.maximum
                     }, label: {
-                        Text("Maximum Heart Rate: \(Int(heartRateData.maximum ?? 0)) BPM")
+                        Text("Maximum Heart Rate: \(Int(maximum ?? 0)) BPM")
                             .bold()
                             .padding(.bottom, 35)
                     })
@@ -69,7 +75,9 @@ struct ContentView: View {
             await healthStore.requestAuthorization()
             do {
                 healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
-                
+                maximum = healthStore.heartRateReading?.maximum
+                minimum = healthStore.heartRateReading?.minimum
+                resting = healthStore.heartRateReading?.resting
             } catch {
                 // Handle the error, e.g., show an error message to the user
             }

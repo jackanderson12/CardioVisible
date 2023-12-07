@@ -25,28 +25,23 @@ enum TimeRange: String, CaseIterable, Identifiable {
 
 
 struct HealthConstants {
-    let calendar: Calendar = Calendar(identifier: .gregorian)
-    var startDate: Date = Date()
-    let endDate: Date = Date()
-    let predicate: NSPredicate?
-    let interval: DateComponents = DateComponents(day: 1)
-    
-    init() {
-        self.startDate = calendar.startOfDay(for: endDate)
-        self.predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-    }
+    static let calendar: Calendar = Calendar(identifier: .gregorian)
+    static let endDate: Date = Date()
+    static var startDate: Date = calendar.startOfDay(for: endDate)
+    static let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+    static let interval: DateComponents = DateComponents(day: 1)
     
     mutating func updateTimeRange(to range: TimeRange) {
         let calendar = Calendar.current
         switch range {
         case .daily:
-            self.startDate = calendar.startOfDay(for: endDate)
+            HealthConstants.startDate = calendar.startOfDay(for: HealthConstants.endDate)
         case .weekly:
-            self.startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? Date()
+            HealthConstants.startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: HealthConstants.endDate) ?? Date()
         case .monthly:
-            self.startDate = calendar.date(byAdding: .month, value: -1, to: endDate) ?? Date()
+            HealthConstants.startDate = calendar.date(byAdding: .month, value: -1, to: HealthConstants.endDate) ?? Date()
         case .yearly:
-            self.startDate = calendar.date(byAdding: .year, value: -1, to: endDate) ?? Date()
+            HealthConstants.startDate = calendar.date(byAdding: .year, value: -1, to: HealthConstants.endDate) ?? Date()
         }
     }
 }
@@ -93,10 +88,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: healthConstants.predicate,
+                quantitySamplePredicate: HealthConstants.predicate,
                 options: .discreteMin,
-                anchorDate: healthConstants.startDate,
-                intervalComponents: healthConstants.interval
+                anchorDate: HealthConstants.startDate,
+                intervalComponents: HealthConstants.interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -114,7 +109,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: self.healthConstants.startDate, to: self.healthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
                     }
@@ -135,10 +130,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: healthConstants.predicate,
+                quantitySamplePredicate: HealthConstants.predicate,
                 options: .discreteMax,
-                anchorDate: healthConstants.startDate,
-                intervalComponents: healthConstants.interval
+                anchorDate: HealthConstants.startDate,
+                intervalComponents: HealthConstants.interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -156,7 +151,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: self.healthConstants.startDate, to: self.healthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
                     }
@@ -177,10 +172,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: healthConstants.predicate,
+                quantitySamplePredicate: HealthConstants.predicate,
                 options: [.discreteAverage],
-                anchorDate: healthConstants.startDate,
-                intervalComponents: healthConstants.interval
+                anchorDate: HealthConstants.startDate,
+                intervalComponents: HealthConstants.interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -198,7 +193,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: self.healthConstants.startDate, to: self.healthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
                     }

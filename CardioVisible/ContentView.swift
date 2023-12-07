@@ -22,13 +22,13 @@ struct ContentView: View {
                             Text(range.rawValue).tag(range)
                         }
                     }
-                    .padding(.top, 30)
+                    .padding(.top, 60)
+                    .padding(.horizontal)
                     .pickerStyle(SegmentedPickerStyle())
                     .onChange(of: selectedTimeRange) {
                         Task {
                             do {
-                                healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
-                                
+                                try await healthStore.heartRateReading = healthStore.updateTimeRange(to: selectedTimeRange)
                             } catch {
                                 // Handle the error, e.g., show an error message to the user
                             }

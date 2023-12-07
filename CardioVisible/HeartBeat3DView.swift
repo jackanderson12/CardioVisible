@@ -93,9 +93,15 @@ struct HeartBeat3DView: UIViewRepresentable {
             modelEntity.scale = [0.1, 0.1, 0.1]
             modelEntity.position = [0, 0, 0]
             
+            let anchorEntity = AnchorEntity()
+            addAllChildren(to: anchorEntity, from: modelEntity)
+            arView.scene.addAnchor(anchorEntity)
+            
+            context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
+            
             // Create and configure a directional light
             let directionalLight = DirectionalLight()
-            directionalLight.light.intensity = 1000 // Adjust intensity as needed
+            directionalLight.light.intensity = 500 // Adjust intensity as needed
             directionalLight.light.color = .white // Adjust color as needed
             directionalLight.orientation = simd_quatf(angle: .pi / 4, axis: [1, 0, 0]) // Adjust orientation as needed
             
@@ -103,12 +109,6 @@ struct HeartBeat3DView: UIViewRepresentable {
             let lightAnchor = AnchorEntity()
             lightAnchor.addChild(directionalLight)
             arView.scene.addAnchor(lightAnchor)
-            
-            let anchorEntity = AnchorEntity()
-            addAllChildren(to: anchorEntity, from: modelEntity)
-            arView.scene.addAnchor(anchorEntity)
-            
-            context.coordinator.setupAnimationTimer(rate: rate, modelEntity: modelEntity)
         }
         
         let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))

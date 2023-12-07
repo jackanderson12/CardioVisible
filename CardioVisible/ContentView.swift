@@ -11,13 +11,29 @@ struct ContentView: View {
     
     @StateObject private var healthStore = HealthStore()
     @State private var selectedRate: Double? = 0.0
+    @State private var selectedTimeRange: TimeRange = .daily
     
     var body: some View {
         ZStack {
             if let heartRateData = healthStore.heartRateReading {
                 VStack {
-                    Spacer()
-                    Spacer()
+                    Picker("Select Time Range", selection: $selectedTimeRange) {
+                        ForEach(TimeRange.allCases) { range in
+                            Text(range.rawValue).tag(range)
+                        }
+                    }
+                    .padding(.top, 30)
+                    .pickerStyle(SegmentedPickerStyle())
+                    .onChange(of: selectedTimeRange) {
+                        Task {
+                            do {
+                                healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
+                                
+                            } catch {
+                                // Handle the error, e.g., show an error message to the user
+                            }
+                        }
+                    }
                     Spacer()
                     Spacer()
                     Button(action: {
@@ -39,19 +55,22 @@ struct ContentView: View {
                     }, label: {
                         Text("Maximum Heart Rate: \(Int(heartRateData.maximum ?? 0)) BPM")
                             .bold()
-                            .padding(.bottom, 5)
+                            .padding(.bottom, 35)
                     })
                 } .zIndex(1.0)
                 
                 if let rate = selectedRate {
                     HeartBeat3DView(rate: rate)
+                        .padding(.top, 50)
                 }
                 
             } else {
                 Text("Loading heart rate data...")
             }
+            
         }
-        .padding()
+        .background(.black)
+        .ignoresSafeArea(edges: .all)
         .task {
             await healthStore.requestAuthorization()
             do {

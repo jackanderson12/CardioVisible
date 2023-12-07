@@ -14,12 +14,36 @@ enum HealthError: Error {
     case queryFailed
 }
 
+enum TimeRange: String, CaseIterable, Identifiable {
+    case daily = "Daily"
+    case weekly = "Weekly"
+    case monthly = "Monthly"
+    case yearly = "Yearly"
+    
+    var id: String { self.rawValue }
+}
+
+
 struct HealthConstants {
     static let calendar: Calendar = Calendar(identifier: .gregorian)
-    static let startDate: Date = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+    static var startDate: Date = Date()
     static let endDate: Date = Date()
     static let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
     static let interval: DateComponents = DateComponents(day: 1)
+    
+    mutating func updateTimeRange(to range: TimeRange) {
+        let calendar = Calendar.current
+        switch range {
+        case .daily:
+            HealthConstants.startDate = calendar.startOfDay(for: HealthConstants.endDate)
+        case .weekly:
+            HealthConstants.startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: HealthConstants.endDate) ?? Date()
+        case .monthly:
+            HealthConstants.startDate = calendar.date(byAdding: .month, value: -1, to: HealthConstants.endDate) ?? Date()
+        case .yearly:
+            HealthConstants.startDate = calendar.date(byAdding: .year, value: -1, to: HealthConstants.endDate) ?? Date()
+        }
+    }
 }
 
 
@@ -85,7 +109,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
-//                        print("Minimum heart rate: \(minimumQuantity)")
+                        //                        print("Minimum heart rate: \(minimumQuantity)")
                     }
                 }
                 
@@ -128,7 +152,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
-//                        print("Maximum heart rate: \(maximumQuantity)")
+                        //                        print("Maximum heart rate: \(maximumQuantity)")
                     }
                 }
                 
@@ -171,7 +195,7 @@ class HealthStore: ObservableObject {
                 statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
-//                        print("Resting heart rate: \(averageQuantity)")
+                        //                        print("Resting heart rate: \(averageQuantity)")
                     }
                 }
                 
@@ -186,7 +210,7 @@ class HealthStore: ObservableObject {
         async let restingRate = fetchRestingHeartRateData()
         async let minRate = fetchHeartMinRateData()
         async let maxRate = fetchHeartMaxRateData()
-
+        
         var combinedData = HeartRateData()
         do {
             combinedData.resting = try await restingRate.resting
@@ -198,6 +222,6 @@ class HealthStore: ObservableObject {
             throw error
         }
     }
-
+    
 }
 

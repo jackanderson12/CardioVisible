@@ -15,6 +15,8 @@
 		13C5A1A22B1F8768006F3F29 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13C5A1A12B1F8768006F3F29 /* Preview Assets.xcassets */; };
 		13C5A1AA2B1F8E3B006F3F29 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */; };
 		13C5A1AC2B1FE1A4006F3F29 /* HeartRateData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */; };
+		13C8EED72B23869500ACE5E1 /* RunningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C8EED62B23869500ACE5E1 /* RunningView.swift */; };
+		13C8EED92B238CD900ACE5E1 /* WalkingRunningData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C8EED82B238CD900ACE5E1 /* WalkingRunningData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		13C5A1A82B1F8797006F3F29 /* CardioVisible.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CardioVisible.entitlements; sourceTree = "<group>"; };
 		13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateData.swift; sourceTree = "<group>"; };
+		13C8EED62B23869500ACE5E1 /* RunningView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningView.swift; sourceTree = "<group>"; };
+		13C8EED82B238CD900ACE5E1 /* WalkingRunningData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkingRunningData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +67,9 @@
 				13C5A1A82B1F8797006F3F29 /* CardioVisible.entitlements */,
 				13C5A19A2B1F8767006F3F29 /* CardioVisibleApp.swift */,
 				13C5A19C2B1F8767006F3F29 /* ContentView.swift */,
+				13C8EED62B23869500ACE5E1 /* RunningView.swift */,
 				13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */,
+				13C8EED82B238CD900ACE5E1 /* WalkingRunningData.swift */,
 				13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */,
 				137B5C3A2B202B470067913C /* HeartBeat3DView.swift */,
 				13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */,
@@ -154,8 +160,10 @@
 			files = (
 				13C5A1AC2B1FE1A4006F3F29 /* HeartRateData.swift in Sources */,
 				13C5A19D2B1F8767006F3F29 /* ContentView.swift in Sources */,
+				13C8EED92B238CD900ACE5E1 /* WalkingRunningData.swift in Sources */,
 				13C5A1AA2B1F8E3B006F3F29 /* HealthStore.swift in Sources */,
 				137B5C3B2B202B470067913C /* HeartBeat3DView.swift in Sources */,
+				13C8EED72B23869500ACE5E1 /* RunningView.swift in Sources */,
 				13C5A19B2B1F8767006F3F29 /* CardioVisibleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct RunningView: View {
     
     @StateObject var healthStore = HealthStore.shared
-    @State private var selectedRate: Double? = 0.0
     @State private var selectedTimeRange: TimeRange = .daily
-    @State private var minimum: Double?
-    @State private var maximum: Double?
-    @State private var resting: Double?
+    
+    @State private var averageSpeed: Double?
+    @State private var maximumSpeed: Double?
+    @State private var totalDistance: Double?
     
     var body: some View {
         ZStack {
@@ -30,33 +30,27 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 Button(action: {
-                    selectedRate = healthStore.heartRateReading.resting
+                    
                 }, label: {
-                    Text("Resting Heart Rate: \(Int(resting ?? 0)) BPM")
+                    Text("Average Speed: \(Int(averageSpeed ?? 0)) MPH")
                         .bold()
                         .padding(.bottom, 5)
                 })
                 Button(action: {
-                    selectedRate = healthStore.heartRateReading.minimum
+                    
                 }, label: {
-                    Text("Minimum Heart Rate: \(Int(minimum ?? 0)) BPM")
+                    Text("Maximum Speed: \(Int(maximumSpeed ?? 0)) MPH")
                         .bold()
                         .padding(.bottom, 5)
                 })
                 Button(action: {
-                    selectedRate = healthStore.heartRateReading.maximum
+                    
                 }, label: {
-                    Text("Maximum Heart Rate: \(Int(maximum ?? 0)) BPM")
+                    Text("Total Distance Traveled: \(Int(totalDistance ?? 0)) Miles")
                         .bold()
                         .padding(.bottom, 100)
                 })
             } .zIndex(1.0)
-            
-            if let rate = selectedRate {
-                HeartBeat3DView(rate: rate)
-                    .padding(.top, 50)
-            }
-            
         }
         .background(.black)
         .ignoresSafeArea(edges: .all)
@@ -64,9 +58,7 @@ struct ContentView: View {
             await healthStore.requestAuthorization()
             do {
                 try await healthStore.fetchHeartRateData()
-                maximum = healthStore.heartRateReading.maximum
-                minimum = healthStore.heartRateReading.minimum
-                resting = healthStore.heartRateReading.resting
+
             } catch {
                 // Handle the error, e.g., show an error message to the user
             }
@@ -74,10 +66,10 @@ struct ContentView: View {
         .onChange(of: selectedTimeRange, {
             Task {
                 healthStore.timeRange = selectedTimeRange
-                try await healthStore.fetchHeartRateData()
-                maximum = healthStore.heartRateReading.maximum
-                minimum = healthStore.heartRateReading.minimum
-                resting = healthStore.heartRateReading.resting
+                try await healthStore.fetchWalkingRunningData()
+                averageSpeed = healthStore.walkingRunningData.averageSpeed
+                maximumSpeed = healthStore.walkingRunningData.maximumSpeed
+                totalDistance = healthStore.walkingRunningData.distanceTraveled
             }
         })
     }

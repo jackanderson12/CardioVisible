@@ -11,7 +11,16 @@ import SwiftUI
 struct CardioVisibleApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                ContentView()
+                    .tabItem {
+                        Image(systemName: "heart.fill")
+                    }
+                RunningView()
+                    .tabItem {
+                        Image(systemName: "figure.run.circle.fill")
+                    }
+            }
         }
     }
 }

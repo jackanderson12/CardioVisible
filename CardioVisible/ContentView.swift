@@ -11,7 +11,7 @@ struct ContentView: View {
     
     @StateObject private var healthStore = HealthStore()
     @State private var selectedRate: Double? = 0.0
-    @State private var selectedTimeRange: TimeRange = .yearly
+    @State private var selectedTimeRange: TimeRange = .daily
     @State private var minimum: Double?
     @State private var maximum: Double?
     @State private var resting: Double?
@@ -25,15 +25,18 @@ struct ContentView: View {
                             Text(range.rawValue).tag(range)
                         }
                     }
+                    .onChange(of: selectedTimeRange, {
+                        Task {
+                            healthStore.updateTimeRange(to: selectedTimeRange, from: healthStore.endDate)
+                            healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
+                            maximum = healthStore.heartRateReading?.maximum
+                            minimum = healthStore.heartRateReading?.minimum
+                            resting = healthStore.heartRateReading?.resting
+                        }
+                    })
                     .padding(.top, 60)
                     .padding(.horizontal)
                     .pickerStyle(SegmentedPickerStyle())
-                    .onChange(of: selectedTimeRange) {
-                        healthStore.healthConstants.updateTimeRange(to: selectedTimeRange)
-                        Task {
-                            try await healthStore.heartRateReading = healthStore.fetchHeartRateData()
-                        }
-                    }
                     Spacer()
                     Spacer()
                     Button(action: {

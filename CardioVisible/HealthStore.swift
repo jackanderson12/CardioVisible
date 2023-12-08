@@ -23,41 +23,21 @@ enum TimeRange: String, CaseIterable, Identifiable {
     var id: String { self.rawValue }
 }
 
-
-struct HealthConstants {
-    static let calendar: Calendar = Calendar(identifier: .gregorian)
-    static let endDate: Date = Date()
-    static var startDate: Date = calendar.startOfDay(for: endDate)
-    static let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-    static let interval: DateComponents = DateComponents(day: 1)
-    
-    mutating func updateTimeRange(to range: TimeRange) {
-        let calendar = Calendar.current
-        switch range {
-        case .daily:
-            HealthConstants.startDate = calendar.startOfDay(for: HealthConstants.endDate)
-        case .weekly:
-            HealthConstants.startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: HealthConstants.endDate) ?? Date()
-        case .monthly:
-            HealthConstants.startDate = calendar.date(byAdding: .month, value: -1, to: HealthConstants.endDate) ?? Date()
-        case .yearly:
-            HealthConstants.startDate = calendar.date(byAdding: .year, value: -1, to: HealthConstants.endDate) ?? Date()
-        }
-    }
-}
-
-
 @MainActor
 class HealthStore: ObservableObject {
     
     @Published var heartRateReading: HeartRateData?
-    @Published var startTimeRange: TimeRange?
-    @Published var healthConstants = HealthConstants()
+    @Published var startTimeRange: TimeRange = .daily
+    @Published var endDate: Date
+    @Published var startDate: Date
     
     var healthStore: HKHealthStore?
     var lastError: Error?
     
     init() {
+        let calendar = Calendar.current
+        endDate = Date()
+        startDate = calendar.startOfDay(for: Date())
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
         } else {
@@ -80,7 +60,25 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchHeartMinRateData() async throws -> HeartRateData {
+    func updateTimeRange(to timeRange: TimeRange, from endDate: Date) {
+        let calendar = Calendar.current
+        switch timeRange {
+        case .daily:
+            startDate = calendar.startOfDay(for: endDate)
+        case .weekly:
+            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+        case .monthly:
+            startDate = calendar.date(byAdding: .month, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+        case .yearly:
+            startDate = calendar.date(byAdding: .year, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+        }
+    }
+    
+    func fetchHeartMinRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+        
+        let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let interval: DateComponents = DateComponents(day: 1)
+        
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
             throw HealthError.missingHeartRateType
         }
@@ -88,10 +86,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: HealthConstants.predicate,
+                quantitySamplePredicate: predicate,
                 options: .discreteMin,
-                anchorDate: HealthConstants.startDate,
-                intervalComponents: HealthConstants.interval
+                anchorDate: startDate,
+                intervalComponents: interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -109,7 +107,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
                     }
@@ -122,7 +120,11 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchHeartMaxRateData() async throws -> HeartRateData {
+    func fetchHeartMaxRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+        
+        let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let interval: DateComponents = DateComponents(day: 1)
+        
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
             throw HealthError.missingHeartRateType
         }
@@ -130,10 +132,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: HealthConstants.predicate,
+                quantitySamplePredicate: predicate,
                 options: .discreteMax,
-                anchorDate: HealthConstants.startDate,
-                intervalComponents: HealthConstants.interval
+                anchorDate: startDate,
+                intervalComponents: interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -151,7 +153,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
                     }
@@ -164,7 +166,11 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchRestingHeartRateData() async throws -> HeartRateData {
+    func fetchRestingHeartRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+
+        let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
+        let interval: DateComponents = DateComponents(day: 1)
+        
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .restingHeartRate) else {
             throw HealthError.missingHeartRateType
         }
@@ -172,10 +178,10 @@ class HealthStore: ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsCollectionQuery(
                 quantityType: heartRateType,
-                quantitySamplePredicate: HealthConstants.predicate,
+                quantitySamplePredicate: predicate,
                 options: [.discreteAverage],
-                anchorDate: HealthConstants.startDate,
-                intervalComponents: HealthConstants.interval
+                anchorDate: startDate,
+                intervalComponents: interval
             )
             
             query.initialResultsHandler = { _, statisticsCollection, error in
@@ -193,7 +199,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: HealthConstants.startDate, to: HealthConstants.endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
                     }
@@ -207,9 +213,9 @@ class HealthStore: ObservableObject {
     }
     
     func fetchHeartRateData() async throws -> HeartRateData {
-        async let restingRate = fetchRestingHeartRateData()
-        async let minRate = fetchHeartMinRateData()
-        async let maxRate = fetchHeartMaxRateData()
+        async let restingRate = fetchRestingHeartRateData(startDate: startDate, endDate: endDate)
+        async let minRate = fetchHeartMinRateData(startDate: startDate, endDate: endDate)
+        async let maxRate = fetchHeartMaxRateData(startDate: startDate, endDate: endDate)
         
         var combinedData = HeartRateData()
         do {
@@ -220,14 +226,6 @@ class HealthStore: ObservableObject {
         } catch {
             // Handle errors
             throw error
-        }
-    }
-    
-    func updateTimeRange(to range: TimeRange) {
-        healthConstants.updateTimeRange(to: range)
-        // Trigger data fetching here
-        Task {
-            try await fetchHeartRateData()
         }
     }
 }

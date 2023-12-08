@@ -26,17 +26,30 @@ enum TimeRange: String, CaseIterable, Identifiable {
 @MainActor
 class HealthStore: ObservableObject {
     
+    static let shared = HealthStore()
+    
+    @Published var timeRange: TimeRange = .daily
     @Published var heartRateReading: HeartRateData
-    @Published var endDate: Date
-    @Published var startDate: Date
     
     var healthStore: HKHealthStore?
     var lastError: Error?
     
+    var startDate: Date {
+        switch timeRange {
+        case .daily:
+            return Calendar.current.startOfDay(for: Date())
+        case .weekly:
+            return Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+        case .monthly:
+            return Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        case .yearly:
+            return Calendar.current.date(byAdding: .year, value: -1, to: Date())!
+        }
+    }
+    
+    var endDate: Date = Date()
+    
     init() {
-        let calendar = Calendar.current
-        endDate = Date()
-        startDate = calendar.startOfDay(for: Date())
         heartRateReading = HeartRateData()
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
@@ -57,20 +70,6 @@ class HealthStore: ObservableObject {
             try await healthStore.requestAuthorization(toShare: [], read: [heartRateType, restingHeartRateType, distanceType, speedType])
         } catch {
             lastError = error
-        }
-    }
-    
-    func updateTimeRange(to timeRange: TimeRange, from endDate: Date) -> Date {
-        let calendar = Calendar.current
-        switch timeRange {
-        case .daily:
-            return calendar.startOfDay(for: endDate)
-        case .weekly:
-            return calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
-        case .monthly:
-            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
-        case .yearly:
-            return calendar.date(byAdding: .year, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
         }
     }
     
@@ -167,7 +166,7 @@ class HealthStore: ObservableObject {
     }
     
     func fetchRestingHeartRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
-
+        
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         let interval: DateComponents = DateComponents(day: 1)
         

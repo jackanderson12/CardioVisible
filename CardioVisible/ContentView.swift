@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @StateObject private var healthStore = HealthStore()
+    @StateObject var healthStore = HealthStore.shared
     @State private var selectedRate: Double? = 0.0
     @State private var selectedTimeRange: TimeRange = .daily
     @State private var minimum: Double?
@@ -73,7 +73,7 @@ struct ContentView: View {
         }
         .onChange(of: selectedTimeRange, {
             Task {
-                healthStore.startDate = healthStore.updateTimeRange(to: selectedTimeRange, from: healthStore.endDate)
+                healthStore.timeRange = selectedTimeRange
                 healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
                 print(healthStore.heartRateReading.resting!)
                 print(healthStore.heartRateReading.minimum!)

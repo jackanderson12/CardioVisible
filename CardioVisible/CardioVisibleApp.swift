@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct CardioVisibleApp: App {
+    
+    init() {
+        UITabBar.appearance().barTintColor = .darkGray
+    }
+    
     var body: some Scene {
         WindowGroup {
             TabView {
@@ -18,7 +23,7 @@ struct CardioVisibleApp: App {
                     }
                 RunningView()
                     .tabItem {
-                        Image(systemName: "figure.run.circle.fill")
+                        Image(systemName: "figure.run")
                     }
             }
         }

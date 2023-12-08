@@ -242,90 +242,60 @@ class HealthStore: ObservableObject {
         
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         
-        guard let walkingRunningDataType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning) else {
+        guard let speedType = HKQuantityType.quantityType(forIdentifier: .runningSpeed) else {
             throw HealthError.missingWalkRunDistanceType
         }
         
         return try await withCheckedThrowingContinuation { continuation in
-            let query = HKStatisticsCollectionQuery(
-                quantityType: walkingRunningDataType,
-                quantitySamplePredicate: predicate,
-                options: [.discreteAverage],
-                anchorDate: startDate,
-                intervalComponents: interval
-            )
-            
-            query.initialResultsHandler = { _, statisticsCollection, error in
-                if let error = error {
-                    print("Query error: \(error)")
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let statisticsCollection = statisticsCollection else {
-                    print("No statistics collection found")
-                    continuation.resume(throwing: HealthError.queryFailed)
-                    return
-                }
-                
-                var localWalkingRunningData = WalkingRunningData() // Local instance
-                
-                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
-                    if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit.mile().unitDivided(by: HKUnit.hour())) {
-                        localWalkingRunningData.averageSpeed = averageQuantity
+                let query = HKStatisticsCollectionQuery(
+                    quantityType: speedType,
+                    quantitySamplePredicate: predicate,
+                    options: [.discreteAverage],
+                    anchorDate: startDate,
+                    intervalComponents: interval
+                )
+
+                query.initialResultsHandler = { _, statisticsCollection, error in
+                    // ... existing error handling ...
+
+                    var localWalkingRunningData = WalkingRunningData()
+                    statisticsCollection?.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
+                        localWalkingRunningData.averageSpeed = statistics.averageQuantity()?.doubleValue(for: HKUnit.mile().unitDivided(by: HKUnit.hour()))
                     }
+                    continuation.resume(returning: localWalkingRunningData)
                 }
-                
-                continuation.resume(returning: localWalkingRunningData) // Return the local instance
+                healthStore?.execute(query)
             }
-            
-            healthStore?.execute(query)
-        }
     }
     
     func fetchWalkingRunningMaximumSpeedData() async throws -> WalkingRunningData {
         
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
         
-        guard let walkingRunningDataType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning) else {
+        guard let speedType = HKQuantityType.quantityType(forIdentifier: .runningSpeed) else {
             throw HealthError.missingWalkRunDistanceType
         }
         
         return try await withCheckedThrowingContinuation { continuation in
-            let query = HKStatisticsCollectionQuery(
-                quantityType: walkingRunningDataType,
-                quantitySamplePredicate: predicate,
-                options: [.discreteAverage],
-                anchorDate: startDate,
-                intervalComponents: interval
-            )
-            
-            query.initialResultsHandler = { _, statisticsCollection, error in
-                if let error = error {
-                    print("Query error: \(error)")
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let statisticsCollection = statisticsCollection else {
-                    print("No statistics collection found")
-                    continuation.resume(throwing: HealthError.queryFailed)
-                    return
-                }
-                
-                var localWalkingRunningData = WalkingRunningData() // Local instance
-                
-                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
-                    if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit.mile().unitDivided(by: HKUnit.hour())) {
-                        localWalkingRunningData.averageSpeed = maximumQuantity
+                let query = HKStatisticsCollectionQuery(
+                    quantityType: speedType,
+                    quantitySamplePredicate: predicate,
+                    options: [.discreteMax],
+                    anchorDate: startDate,
+                    intervalComponents: interval
+                )
+
+                query.initialResultsHandler = { _, statisticsCollection, error in
+                    // ... existing error handling ...
+
+                    var localWalkingRunningData = WalkingRunningData()
+                    statisticsCollection?.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
+                        localWalkingRunningData.maximumSpeed = statistics.maximumQuantity()?.doubleValue(for: HKUnit.mile().unitDivided(by: HKUnit.hour()))
                     }
+                    continuation.resume(returning: localWalkingRunningData)
                 }
-                
-                continuation.resume(returning: localWalkingRunningData) // Return the local instance
+                healthStore?.execute(query)
             }
-            
-            healthStore?.execute(query)
-        }
     }
     
     func fetchWalkingRunningTotalDistanceData() async throws -> WalkingRunningData {
@@ -337,40 +307,25 @@ class HealthStore: ObservableObject {
         }
         
         return try await withCheckedThrowingContinuation { continuation in
-            let query = HKStatisticsCollectionQuery(
-                quantityType: walkingRunningDataType,
-                quantitySamplePredicate: predicate,
-                options: [.discreteAverage],
-                anchorDate: startDate,
-                intervalComponents: interval
-            )
-            
-            query.initialResultsHandler = { _, statisticsCollection, error in
-                if let error = error {
-                    print("Query error: \(error)")
-                    continuation.resume(throwing: error)
-                    return
-                }
-                
-                guard let statisticsCollection = statisticsCollection else {
-                    print("No statistics collection found")
-                    continuation.resume(throwing: HealthError.queryFailed)
-                    return
-                }
-                
-                var localWalkingRunningData = WalkingRunningData() // Local instance
-                
-                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
-                    if let totalDistance = statistics.sumQuantity()?.doubleValue(for: HKUnit.mile()) {
-                        localWalkingRunningData.distanceTraveled = totalDistance
+                let query = HKStatisticsCollectionQuery(
+                    quantityType: walkingRunningDataType,
+                    quantitySamplePredicate: predicate,
+                    options: [.cumulativeSum],
+                    anchorDate: startDate,
+                    intervalComponents: interval
+                )
+
+                query.initialResultsHandler = { _, statisticsCollection, error in
+                    // ... existing error handling ...
+
+                    var localWalkingRunningData = WalkingRunningData()
+                    statisticsCollection?.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
+                        localWalkingRunningData.distanceTraveled = statistics.sumQuantity()?.doubleValue(for: HKUnit.mile())
                     }
+                    continuation.resume(returning: localWalkingRunningData)
                 }
-                
-                continuation.resume(returning: localWalkingRunningData) // Return the local instance
+                healthStore?.execute(query)
             }
-            
-            healthStore?.execute(query)
-        }
     }
     
     func fetchWalkingRunningData() async throws {

@@ -26,8 +26,7 @@ enum TimeRange: String, CaseIterable, Identifiable {
 @MainActor
 class HealthStore: ObservableObject {
     
-    @Published var heartRateReading: HeartRateData?
-    @Published var startTimeRange: TimeRange = .daily
+    @Published var heartRateReading: HeartRateData
     @Published var endDate: Date
     @Published var startDate: Date
     
@@ -38,6 +37,7 @@ class HealthStore: ObservableObject {
         let calendar = Calendar.current
         endDate = Date()
         startDate = calendar.startOfDay(for: Date())
+        heartRateReading = HeartRateData()
         if HKHealthStore.isHealthDataAvailable() {
             healthStore = HKHealthStore()
         } else {
@@ -60,17 +60,17 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func updateTimeRange(to timeRange: TimeRange, from endDate: Date) {
+    func updateTimeRange(to timeRange: TimeRange, from endDate: Date) -> Date {
         let calendar = Calendar.current
         switch timeRange {
         case .daily:
-            startDate = calendar.startOfDay(for: endDate)
+            return calendar.startOfDay(for: endDate)
         case .weekly:
-            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+            return calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
         case .monthly:
-            startDate = calendar.date(byAdding: .month, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+            return calendar.date(byAdding: .month, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
         case .yearly:
-            startDate = calendar.date(byAdding: .year, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
+            return calendar.date(byAdding: .year, value: -1, to: endDate) ?? calendar.startOfDay(for: endDate)
         }
     }
     
@@ -216,17 +216,15 @@ class HealthStore: ObservableObject {
         async let restingRate = fetchRestingHeartRateData(startDate: startDate, endDate: endDate)
         async let minRate = fetchHeartMinRateData(startDate: startDate, endDate: endDate)
         async let maxRate = fetchHeartMaxRateData(startDate: startDate, endDate: endDate)
-        
-        var combinedData = HeartRateData()
         do {
-            combinedData.resting = try await restingRate.resting
-            combinedData.minimum = try await minRate.minimum
-            combinedData.maximum = try await maxRate.maximum
-            return combinedData
+            heartRateReading.resting = try await restingRate.resting
+            heartRateReading.minimum = try await minRate.minimum
+            heartRateReading.maximum = try await maxRate.maximum
         } catch {
             // Handle errors
             throw error
         }
+        return heartRateReading
     }
 }
 

@@ -63,7 +63,7 @@ struct ContentView: View {
         .task {
             await healthStore.requestAuthorization()
             do {
-                try await healthStore.heartRateReading = healthStore.fetchHeartRateData()
+                try await healthStore.fetchHeartRateData()
                 maximum = healthStore.heartRateReading.maximum
                 minimum = healthStore.heartRateReading.minimum
                 resting = healthStore.heartRateReading.resting
@@ -74,10 +74,10 @@ struct ContentView: View {
         .onChange(of: selectedTimeRange, {
             Task {
                 healthStore.timeRange = selectedTimeRange
-                healthStore.heartRateReading = try await healthStore.fetchHeartRateData()
-                print(healthStore.heartRateReading.resting!)
-                print(healthStore.heartRateReading.minimum!)
-                print(healthStore.heartRateReading.maximum!)
+                try await healthStore.fetchHeartRateData()
+                maximum = healthStore.heartRateReading.maximum
+                minimum = healthStore.heartRateReading.minimum
+                resting = healthStore.heartRateReading.resting
             }
         })
     }

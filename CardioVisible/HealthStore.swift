@@ -28,6 +28,8 @@ class HealthStore: ObservableObject {
     
     static let shared = HealthStore()
     
+    let endDate = Date()
+    
     @Published var timeRange: TimeRange = .daily
     @Published var heartRateReading: HeartRateData
     
@@ -47,7 +49,18 @@ class HealthStore: ObservableObject {
         }
     }
     
-    var endDate: Date = Date()
+    var interval: DateComponents {
+        switch timeRange {
+        case .daily:
+            return DateComponents(day: 1)
+        case .weekly:
+            return DateComponents(day: 7)
+        case .monthly:
+            return DateComponents(day: 30)
+        case .yearly:
+            return DateComponents(day: 365)
+        }
+    }
     
     init() {
         heartRateReading = HeartRateData()
@@ -73,10 +86,9 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchHeartMinRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+    func fetchHeartMinRateData() async throws -> HeartRateData {
         
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-        let interval: DateComponents = DateComponents(day: 1)
         
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
             throw HealthError.missingHeartRateType
@@ -106,7 +118,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
                     if let minimumQuantity = statistics.minimumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.minimum = minimumQuantity
                     }
@@ -119,10 +131,9 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchHeartMaxRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+    func fetchHeartMaxRateData() async throws -> HeartRateData {
         
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-        let interval: DateComponents = DateComponents(day: 1)
         
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
             throw HealthError.missingHeartRateType
@@ -152,7 +163,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
                     if let maximumQuantity = statistics.maximumQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.maximum = maximumQuantity
                     }
@@ -165,10 +176,9 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchRestingHeartRateData(startDate: Date, endDate: Date) async throws -> HeartRateData {
+    func fetchRestingHeartRateData() async throws -> HeartRateData {
         
         let predicate: NSPredicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictEndDate)
-        let interval: DateComponents = DateComponents(day: 1)
         
         guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .restingHeartRate) else {
             throw HealthError.missingHeartRateType
@@ -198,7 +208,7 @@ class HealthStore: ObservableObject {
                 
                 var localHeartRateData = HeartRateData() // Local instance
                 
-                statisticsCollection.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                statisticsCollection.enumerateStatistics(from: self.startDate, to: self.endDate) { statistics, _ in
                     if let averageQuantity = statistics.averageQuantity()?.doubleValue(for: HKUnit(from: "count/min")) {
                         localHeartRateData.resting = averageQuantity
                     }
@@ -211,19 +221,18 @@ class HealthStore: ObservableObject {
         }
     }
     
-    func fetchHeartRateData() async throws -> HeartRateData {
-        async let restingRate = fetchRestingHeartRateData(startDate: startDate, endDate: endDate)
-        async let minRate = fetchHeartMinRateData(startDate: startDate, endDate: endDate)
-        async let maxRate = fetchHeartMaxRateData(startDate: startDate, endDate: endDate)
+    func fetchHeartRateData() async throws {
+        async let restingRate = fetchRestingHeartRateData()
+        async let minRate = fetchHeartMinRateData()
+        async let maxRate = fetchHeartMaxRateData()
         do {
-            heartRateReading.resting = try await restingRate.resting
-            heartRateReading.minimum = try await minRate.minimum
-            heartRateReading.maximum = try await maxRate.maximum
+            self.heartRateReading.resting = try await restingRate.resting
+            self.heartRateReading.minimum = try await minRate.minimum
+            self.heartRateReading.maximum = try await maxRate.maximum
         } catch {
             // Handle errors
             throw error
         }
-        return heartRateReading
     }
 }
 

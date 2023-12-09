@@ -11,7 +11,7 @@ struct RunningView: View {
     
     @StateObject var healthStore = HealthStore.shared
     @State private var selectedTimeRange: TimeRange = .daily
-    
+    @State private var selectedSpeed: Double? = 0.0
     @State private var averageSpeed: Double?
     @State private var maximumSpeed: Double?
     @State private var totalDistance: Double?
@@ -30,14 +30,14 @@ struct RunningView: View {
                 Spacer()
                 Spacer()
                 Button(action: {
-                    
+                    selectedSpeed = averageSpeed
                 }, label: {
                     Text("Average Speed: \(Int(averageSpeed ?? 0)) MPH")
                         .bold()
                         .padding(.bottom, 5)
                 })
                 Button(action: {
-                    
+                    selectedSpeed = maximumSpeed
                 }, label: {
                     Text("Maximum Speed: \(Int(maximumSpeed ?? 0)) MPH")
                         .bold()
@@ -51,6 +51,11 @@ struct RunningView: View {
                         .padding(.bottom, 100)
                 })
             } .zIndex(1.0)
+            
+            if let speed = selectedSpeed {
+                Running3DView(speed: speed)
+                    .padding()
+            }
         }
         .background(.black)
         .ignoresSafeArea(edges: .all)

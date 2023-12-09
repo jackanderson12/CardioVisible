@@ -91,7 +91,7 @@ struct HeartBeat3DView: UIViewRepresentable {
         
         if let modelEntity = try? ModelEntity.loadModel(named: filename) {
             modelEntity.scale = [0.1, 0.1, 0.1]
-            modelEntity.position = [0, 0, 0]
+            modelEntity.position = [0, -0.08, 0]
             
             let anchorEntity = AnchorEntity()
             addAllChildren(to: anchorEntity, from: modelEntity)

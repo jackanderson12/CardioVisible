@@ -114,6 +114,7 @@ struct Running3DView: UIViewRepresentable {
         let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePan(_:)))
         arView.addGestureRecognizer(panGesture)
         
+        
         return arView
     }
     

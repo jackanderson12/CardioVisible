@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		13129B882B24C38700321DE6 /* RunningAnimation.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 13129B872B24C38700321DE6 /* RunningAnimation.usdz */; };
 		13129B8A2B24C3C000321DE6 /* Running3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13129B892B24C3C000321DE6 /* Running3DView.swift */; };
+		13129B932B252DBA00321DE6 /* earth.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 13129B922B252DBA00321DE6 /* earth.usdz */; };
+		13129B952B2534A600321DE6 /* Earth3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13129B942B2534A600321DE6 /* Earth3DView.swift */; };
 		137B5C3B2B202B470067913C /* HeartBeat3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137B5C3A2B202B470067913C /* HeartBeat3DView.swift */; };
 		13B6E4D22B20D4FC00627BAC /* beating-heart-v004a-animated.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */; };
 		13C5A19B2B1F8767006F3F29 /* CardioVisibleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C5A19A2B1F8767006F3F29 /* CardioVisibleApp.swift */; };
@@ -24,6 +26,8 @@
 /* Begin PBXFileReference section */
 		13129B872B24C38700321DE6 /* RunningAnimation.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = RunningAnimation.usdz; sourceTree = "<group>"; };
 		13129B892B24C3C000321DE6 /* Running3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Running3DView.swift; sourceTree = "<group>"; };
+		13129B922B252DBA00321DE6 /* earth.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = earth.usdz; sourceTree = "<group>"; };
+		13129B942B2534A600321DE6 /* Earth3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Earth3DView.swift; sourceTree = "<group>"; };
 		137B5C3A2B202B470067913C /* HeartBeat3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartBeat3DView.swift; sourceTree = "<group>"; };
 		13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = "beating-heart-v004a-animated.usdz"; sourceTree = "<group>"; };
 		13C5A1972B1F8767006F3F29 /* CardioVisible.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardioVisible.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,10 +79,12 @@
 				13C5A1A92B1F8E3B006F3F29 /* HealthStore.swift */,
 				13C8EED82B238CD900ACE5E1 /* WalkingRunningData.swift */,
 				13C5A1AB2B1FE1A4006F3F29 /* HeartRateData.swift */,
+				13129B942B2534A600321DE6 /* Earth3DView.swift */,
 				137B5C3A2B202B470067913C /* HeartBeat3DView.swift */,
 				13129B892B24C3C000321DE6 /* Running3DView.swift */,
 				13B6E4D12B20D4FC00627BAC /* beating-heart-v004a-animated.usdz */,
 				13129B872B24C38700321DE6 /* RunningAnimation.usdz */,
+				13129B922B252DBA00321DE6 /* earth.usdz */,
 				13C5A19E2B1F8768006F3F29 /* Assets.xcassets */,
 				13C5A1A02B1F8768006F3F29 /* Preview Content */,
 			);
@@ -154,6 +160,7 @@
 				13C5A1A22B1F8768006F3F29 /* Preview Assets.xcassets in Resources */,
 				13B6E4D22B20D4FC00627BAC /* beating-heart-v004a-animated.usdz in Resources */,
 				13129B882B24C38700321DE6 /* RunningAnimation.usdz in Resources */,
+				13129B932B252DBA00321DE6 /* earth.usdz in Resources */,
 				13C5A19F2B1F8768006F3F29 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -171,6 +178,7 @@
 				13C8EED92B238CD900ACE5E1 /* WalkingRunningData.swift in Sources */,
 				13C5A1AA2B1F8E3B006F3F29 /* HealthStore.swift in Sources */,
 				137B5C3B2B202B470067913C /* HeartBeat3DView.swift in Sources */,
+				13129B952B2534A600321DE6 /* Earth3DView.swift in Sources */,
 				13C8EED72B23869500ACE5E1 /* RunningView.swift in Sources */,
 				13C5A19B2B1F8767006F3F29 /* CardioVisibleApp.swift in Sources */,
 			);

@@ -6,7 +6,7 @@ Welcome to my experimental app project, where I delve into the exciting capabili
 
 ## Features
 
-CArdioVisible includes several features that showcase the integration and capabilities of HealthKit and RealityKit:
+CardioVisible includes several features that showcase the integration and capabilities of HealthKit and RealityKit:
 
 1. **HealthKit Integration**: The app fetches and displays health data, such as heart rate and walking/running distances, from HealthKit. It provides an interactive way to visualize your physical activities.
 

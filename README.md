@@ -40,6 +40,10 @@ As this is an experimental project, contributions, suggestions, and discussions 
 
 This app is not intended for commercial use and is primarily for educational and testing purposes. It might not reflect best practices for production-level applications.
 
+## Support
+
+Check out the support page under the wiki tab for more instructions on how to get the best support for any issues.
+
 ---
 
 Enjoy exploring CardioVisible! Your feedback and contributions are what make these experiments valuable. Let's learn and grow together in this exciting field of iOS development!
